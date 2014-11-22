@@ -6,7 +6,7 @@ $(function() {
   app = {
 //TODO: The current 'addFriend' function just adds the class 'friend'
 //to all messages sent by the user
-    server: 'http://127.0.0.1:3000/classes',
+    server: 'http://127.0.0.1:3000/classes/messages',
     username: 'anonymous',
     roomname: 'lobby',
     lastMessageId: 0,
@@ -53,6 +53,9 @@ $(function() {
         },
         error: function (data) {
           console.error('chatterbox: Failed to send message');
+        },
+        complete:function(){
+          console.log('send complete');
         }
       });
     },
@@ -215,7 +218,7 @@ $(function() {
         text: app.$message.val(),
         roomname: app.roomname || 'lobby'
       };
-
+      console.log('handle submit');
       app.send(message);
 
       // Stop the form from submitting

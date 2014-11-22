@@ -1,4 +1,4 @@
-CREATE DATABASE chat;
+/*CREATE DATABASE chat;*/
 
 USE chat;
 
@@ -9,13 +9,15 @@ CREATE TABLE messages (
 );
 
 CREATE TABLE rooms (
-  roomId INT(200),
-  roomname VARCHAR(12)
+  roomId INT(200) AUTO_INCREMENT,
+  roomname VARCHAR(12),
+  PRIMARY KEY (roomId)
 );
 
 CREATE TABLE users (
-  userId INT(100),
-  username VARCHAR(12)
+  userId INT(100) AUTO_INCREMENT,
+  username VARCHAR(12),
+  PRIMARY KEY (userId)
 );
 
 CREATE TABLE room_user_rel (

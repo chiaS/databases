@@ -23,9 +23,9 @@ app.use(parser.json());
 app.use("/classes", router);
 
 // Serve the client files
-app.use(express.static(__dirname+'/../client'));
-app.get('/classes', function(req, res){
-  res.sendFile('/Users/student/Desktop/2014-10-databases/client/client/index.html');
+app.use(express.static(__dirname+'/../client/client'));
+app.get('/', function(req, res){
+  res.sendFile('../client/client/index.html');
 });
 
 // If we are being run directly, run the server.
