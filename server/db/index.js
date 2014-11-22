@@ -30,9 +30,13 @@ var query = function(queryString, callback) {
   });
 };
 
-var findUser = function(user, callback){
-  console.log('test');
-  var queryString = 'select userId from users where username = "'+ user+'"' ;
+var findUserId = function(username, callback){
+  var queryString = 'select userId from users where username = "'+ username+'"' ;
+  query(queryString, callback);
+};
+
+var findUserName = function(userId, callback){
+  var queryString = 'select username from users where userId ='+ userId ;
   query(queryString, callback);
 };
 
@@ -51,14 +55,14 @@ var addRoom = function(room, callback) {
   query(queryString, callback);
 };
 
-var findText = function(text, callback) {
-  var queryString = 'select * from messages where text = "'+ text + '"';
+var findText = function(topic, value, callback) {
+  var queryString = 'select * from messages where ' + topic + ' = '+ value;
   query(queryString, callback);
 };
 
 var addText = function(text, user, room, callback) {
   var userId, roomId;
-  findUser(user, function(results){
+  findUserId(user, function(results){
     userId = results[0].userId;
     findRoom(room, function(results){
       roomId = results[0].roomId;
@@ -68,13 +72,38 @@ var addText = function(text, user, room, callback) {
   });
 };
 
-exports.findUser = findUser;
+var getMessages = function(roomname){
+  //constraint: roomname
+  //display text with username
+  var roomId, userId, username, text;
+  //1 - find room id with room name
+  findRoom(roomname, function(results){
+    roomId = results[0].roomId;
+    //2 - find text and user id with room id
+    findText('roomId', roomId, function(results){
+      for(var i=0; i<results.length; i++){
+        text = results[i].text;
+        userId = results[i].userId;
+        //3 - find username with userid
+        findUserName(userId, function(results){
+          //4 - display username and text
+          username = results[0].username;
+          console.log(username, text);
+        });
+      }
+    });
+  });
+
+}
+
+exports.findUserName = findUserName;
+exports.findUserId = findUserId;
 exports.addUser = addUser;
 exports.findRoom = findRoom;
 exports.addRoom = addRoom;
 exports.findText = findText;
 exports.addText = addText;
-
+exports.getMessages = getMessages;
 
 
 
