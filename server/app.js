@@ -22,14 +22,11 @@ app.use(parser.json());
 // Set up our routes
 app.use("/classes", router);
 
-app.use(express.static(__dirname + '/../client/client'));
-app.get('/', function(req, res){
-  res.sendFile('../client/client/index.html');
-});
-
-
 // Serve the client files
-app.use(express.static(__dirname + "../client"));
+app.use(express.static(__dirname+'/../client'));
+app.get('/classes', function(req, res){
+  res.sendFile('/Users/student/Desktop/2014-10-databases/client/client/index.html');
+});
 
 // If we are being run directly, run the server.
 if (!module.parent) {
