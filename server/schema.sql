@@ -3,10 +3,25 @@ CREATE DATABASE chat;
 USE chat;
 
 CREATE TABLE messages (
-  /* Describe your table here.*/
+  text VARCHAR(140),
+  userId INT(100),
+  roomId INT(200)
 );
 
-/* Create other tables and define schemas for them here! */
+CREATE TABLE rooms (
+  roomId INT(200),
+  roomname VARCHAR(12)
+);
+
+CREATE TABLE users (
+  userId INT(100),
+  username VARCHAR(12)
+);
+
+CREATE TABLE room_user_rel (
+  userId INT(100),
+  roomId INT(200)
+);
 
 
 

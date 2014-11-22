@@ -1,6 +1,7 @@
 var express = require('express');
 var db = require('./db');
 
+
 // Middleware
 var morgan = require('morgan');
 var parser = require('body-parser');
@@ -21,6 +22,12 @@ app.use(parser.json());
 // Set up our routes
 app.use("/classes", router);
 
+app.use(express.static(__dirname + '/../client/client'));
+app.get('/', function(req, res){
+  res.sendFile('../client/client/index.html');
+});
+
+
 // Serve the client files
 app.use(express.static(__dirname + "../client"));
 
@@ -30,3 +37,5 @@ if (!module.parent) {
   console.log("Listening on", app.get("port"));
 }
 
+
+db.connection();
