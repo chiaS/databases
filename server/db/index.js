@@ -4,64 +4,79 @@ var mysql = require('mysql');
 // You will need to connect with the user "root", no password,
 // and to the database "chat".
 //
-exports.connection = function(){
-  var connection = mysql.createConnection(
+var connection;
+exports.connect = function(){
+  connection = mysql.createConnection(
       {
         host     : 'localhost',
         user     : 'root',
         password : '',
         database : 'chat',
       }
+
   );
+
 
   connection.connect();
 
-  var query = function(queryString, callback) {
-    connection.query(queryString, function(err, results) {
-      if (err) throw err;
-      callback(results);
-    });
-  };
 
   // connection.end();
 };
 
-exports.findUser = function(user, callback){
-  var queryString = 'select * from users where username = "'+ user+'"' ;
+var query = function(queryString, callback) {
+  connection.query(queryString, function(err, results) {
+    if (err) throw err;
+    callback(results);
+  });
+};
+
+var findUser = function(user, callback){
+  console.log('test');
+  var queryString = 'select userId from users where username = "'+ user+'"' ;
   query(queryString, callback);
 };
 
-exports.addUser = function(user, callback) {
+var addUser = function(user, callback) {
   var queryString = 'insert into users (username) values ("'+ user + '")';
   query(queryString, callback);
 };
 
-exports.findRoom = function(room, callback) {
-  var queryString = 'select * from rooms where roomname = "'+ room + '"';
+var findRoom = function(room, callback) {
+  var queryString = 'select roomId from rooms where roomname = "'+ room+'"' ;
   query(queryString, callback);
 };
 
-exports.addRoom = function(room, callback) {
+var addRoom = function(room, callback) {
   var queryString = 'insert into rooms (roomname) values ("'+ room + '")';
   query(queryString, callback);
 };
 
-exports.findText = function(text, callback) {
+var findText = function(text, callback) {
   var queryString = 'select * from messages where text = "'+ text + '"';
   query(queryString, callback);
 };
 
-exports.addText = function(text, user, room, callback) {
+var addText = function(text, user, room, callback) {
   var userId, roomId;
-  findUser(user, function(id){
-    userId = id;
+  findUser(user, function(results){
+    userId = results[0].userId;
+    findRoom(room, function(results){
+      roomId = results[0].roomId;
+      var queryString = 'insert into messages (text, userId, roomId) values ("'+ text + '","' +userId+'","'+roomId+'")';
+      query(queryString, callback);
+    });
   });
-  findRoom(room, function(id){
-    roomId = id;
-  });
-  var queryString = 'insert into messages (text, roomId, userId) values ("'+ text + '",'+roomId+','+userId+')';
-  query(queryString, callback);
 };
+
+exports.findUser = findUser;
+exports.addUser = addUser;
+exports.findRoom = findRoom;
+exports.addRoom = addRoom;
+exports.findText = findText;
+exports.addText = addText;
+
+
+
 
 
 

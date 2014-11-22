@@ -13,11 +13,19 @@ module.exports = {
      //res.sendFile('/Users/student/Desktop/2014-10-databases/client/client/index.html');
     }, // a function which handles a get request for all messages
     post: function (req, res) {
-
-      db.addRoom(req.body.roomname, function(result){
-        return result;
+      // db.addUser(req.body.username, function(results){
+      //   console.log(results);
+      // });
+      // db.addRoom(req.body.roomname, function(results) {
+      //   console.log(results);
+      // });
+      db.addText(req.body.text, req.body.username, req.body.roomname, function(results){
+        console.log(results);
       });
-      console.log(JSON.stringify(req.body.text));
+      // db.findRoom(req.body.roomname, function(results) {
+      //   console.log(results[0].roomId);
+      // });
+
     } // a function which handles posting a message to the database
   },
 

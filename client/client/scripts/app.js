@@ -7,7 +7,7 @@ $(function() {
 //TODO: The current 'addFriend' function just adds the class 'friend'
 //to all messages sent by the user
     server: 'http://127.0.0.1:3000/classes/messages',
-    username: 'anonymous',
+    username: 'Silvia',
     roomname: 'lobby',
     lastMessageId: 0,
     friends: {},
@@ -214,7 +214,7 @@ $(function() {
     },
     handleSubmit: function(evt) {
       var message = {
-        username: app.username,
+        username: app.username ||'Silvia',
         text: app.$message.val(),
         roomname: app.roomname || 'lobby'
       };
