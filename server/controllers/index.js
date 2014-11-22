@@ -7,15 +7,11 @@ console.log("controllers!!!");
 module.exports = {
 
   messages: {
-    get: function (req) {
-    //retrive from db
-      db.getMessages('lobby');
-     //res.sendFile('/Users/student/Desktop/2014-10-databases/client/client/index.html');
+    get: function (req, res) {
+      models.messages.get(req, res);
     }, // a function which handles a get request for all messages
     post: function (req) {
-      db.addText(req.body.text, req.body.username, req.body.roomname, function(results){
-        console.log(results);
-      });
+      models.messages.post(req);
     } // a function which handles posting a message to the database
   },
 

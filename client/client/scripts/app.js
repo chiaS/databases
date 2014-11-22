@@ -29,7 +29,7 @@ $(function() {
       app.$roomSelect.on('change', app.saveRoom);
 
       // Fetch previous messages
-      app.startSpinner();
+      //app.startSpinner();
       app.fetch(false);
 
       // Poll for new messages
@@ -60,13 +60,16 @@ $(function() {
       });
     },
     fetch: function(animate) {
+      console.log('fetch');
       $.ajax({
         url: app.server,
         type: 'GET',
         contentType: 'application/json',
         // data: { order: '-createdAt'},
         success: function(data) {
+          // console.log('hello'+data);
           console.log('chatterbox: Messages fetched');
+          console.log('???'+data);
 
           // Don't bother if we have nothing to work with
           if (!data.results || !data.results.length) { return; }
@@ -74,7 +77,7 @@ $(function() {
           // Get the last message
           var mostRecentMessage = data.results[data.results.length-1];
           var displayedRoom = $('.chat span').first().data('roomname');
-          app.stopSpinner();
+          // app.stopSpinner();
           // Only bother updating the DOM if we have a new message
           if (mostRecentMessage.objectId !== app.lastMessageId || app.roomname !== displayedRoom) {
             // Update the UI with the fetched rooms
@@ -89,7 +92,8 @@ $(function() {
         },
         error: function(data) {
           console.error('chatterbox: Failed to fetch messages');
-        }
+        },
+        // complete:function(){console.log('fetch complete');}
       });
     },
     clearMessages: function() {

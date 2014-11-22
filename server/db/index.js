@@ -30,18 +30,8 @@ var query = function(queryString, callback) {
   });
 };
 
-var findUserId = function(username, callback){
-  var queryString = 'select userId from users where username = "'+ username+'"' ;
-  query(queryString, callback);
-};
-
-var findUserName = function(userId, callback){
-  var queryString = 'select username from users where userId ='+ userId ;
-  query(queryString, callback);
-};
-
 var addUser = function(user, callback) {
-  var queryString = 'insert into users (username) values ("'+ user + '")';
+  var queryString = 'insert into messages (username) values ("'+ user + '")';
   query(queryString, callback);
 };
 
@@ -60,22 +50,20 @@ var findText = function(topic, value, callback) {
   query(queryString, callback);
 };
 
-var addText = function(text, user, room, callback) {
-  var userId, roomId;
-  findUserId(user, function(results){
-    userId = results[0].userId;
-    findRoom(room, function(results){
-      roomId = results[0].roomId;
-      var queryString = 'insert into messages (text, userId, roomId) values ("'+ text + '","' +userId+'","'+roomId+'")';
-      query(queryString, callback);
-    });
+var addText = function(text, username, room, callback) {
+  var roomId;
+  findRoom(room, function(results){
+    roomId = results[0].roomId;
+    var queryString = 'insert into messages (text, username, roomId) values ("'+ text + '","' +username+'","'+roomId+'")';
+    query(queryString, callback);
   });
 };
 
 var getMessages = function(roomname){
   //constraint: roomname
   //display text with username
-  var roomId, userId, username, text;
+  var resultArr = [];
+  var roomId, username, text;
   //1 - find room id with room name
   findRoom(roomname, function(results){
     roomId = results[0].roomId;
@@ -83,21 +71,20 @@ var getMessages = function(roomname){
     findText('roomId', roomId, function(results){
       for(var i=0; i<results.length; i++){
         text = results[i].text;
-        userId = results[i].userId;
-        //3 - find username with userid
-        findUserName(userId, function(results){
-          //4 - display username and text
-          username = results[0].username;
-          console.log(username, text);
-        });
+        username = results[i].username;
+        //3 - display username with userid
+        // console.log(username, text);
+        resultArr.push({'text':text, 'username':username, 'roomname':roomname});
+
       }
+      (function(){
+        return resultArr;
+      })();
+//return not going thoruhg
     });
   });
+};
 
-}
-
-exports.findUserName = findUserName;
-exports.findUserId = findUserId;
 exports.addUser = addUser;
 exports.findRoom = findRoom;
 exports.addRoom = addRoom;

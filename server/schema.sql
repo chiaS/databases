@@ -4,7 +4,7 @@ USE chat;
 
 CREATE TABLE messages (
   text VARCHAR(140),
-  userId INT(100),
+  username VARCHAR(12),
   roomId INT(200)
 );
 
@@ -14,16 +14,6 @@ CREATE TABLE rooms (
   PRIMARY KEY (roomId)
 );
 
-CREATE TABLE users (
-  userId INT(100) AUTO_INCREMENT,
-  username VARCHAR(12),
-  PRIMARY KEY (userId)
-);
-
-CREATE TABLE room_user_rel (
-  userId INT(100),
-  roomId INT(200)
-);
 
 
 
