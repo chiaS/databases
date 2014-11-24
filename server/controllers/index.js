@@ -2,23 +2,35 @@ var models = require('../models');
 var bluebird = require('bluebird');
 var db = require('../db');
 
-console.log("controllers!!!");
-
 module.exports = {
-
   messages: {
     get: function (req, res) {
-      models.messages.get(req, res);
-    }, // a function which handles a get request for all messages
-    post: function (req) {
-      models.messages.post(req);
-    } // a function which handles posting a message to the database
+      models.messages.get(function(results){
+        res.status(200).send({results:results});
+      });
+    },
+    post: function (req, res) {
+      var params = ['"'+req.body.text+'"', '"'+req.body.username+'"', req.body.roomname];
+      models.messages.post(params, function(err){
+        res.sendStatus(201);
+      });
+    } 
   },
 
-  users: {
-    // Ditto as above
-    get: function (req, res) {},
-    post: function (req, res) {}
+  rooms: {
+    get: function (req, res) {
+      models.rooms.get(function(results){
+        console.log('room list===>'+results);
+        res.status(200).send({results:results});
+      });
+    },
+    post: function (req, res) {
+      var params = ['"'+req.body.roomname+'"'];
+      console.log('post new room');
+      models.rooms.post(params, function(err, results){
+        res.sendStatus(201);
+      });
+    }
   }
 };
 

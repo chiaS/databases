@@ -29,71 +29,62 @@ $(function() {
       app.$roomSelect.on('change', app.saveRoom);
 
       // Fetch previous messages
-      //app.startSpinner();
-      app.fetch(false);
-
+      app.startSpinner();
+      app.fetch(false, 'http://127.0.0.1:3000/classes/rooms');
       // Poll for new messages
       // setInterval(app.fetch, 3000);
     },
-    send: function(data) {
+    send: function(data, server) {
       app.startSpinner();
       // Clear messages input
       app.$message.val('');
 
       // POST the message to the server
       $.ajax({
-        url: app.server,
+        url:  server || app.server,
         type: 'POST',
         data: JSON.stringify(data),
         contentType: 'application/json',
         success: function (data) {
           console.log('chatterbox: Message sent');
           // Trigger a fetch to update the messages, pass true to animate
-          app.fetch();
+          if(server)
+            app.fetch(true, 'http://127.0.0.1:3000/classes/rooms');
+          else
+            app.fetch(true);
         },
-        error: function (data) {
-          console.error('chatterbox: Failed to send message');
+        error: function (err, data) {
+          console.error('chatterbox: Failed to send message: '+ JSON.stringify(err));
         },
         complete:function(){
           console.log('send complete');
         }
       });
     },
-    fetch: function(animate) {
-      console.log('fetch');
+    fetch: function(animate, server) {
       $.ajax({
-        url: app.server,
+        url: server || app.server,
         type: 'GET',
         contentType: 'application/json',
         // data: { order: '-createdAt'},
         success: function(data) {
-          // console.log('hello'+data);
           console.log('chatterbox: Messages fetched');
-          console.log('???'+data);
-
           // Don't bother if we have nothing to work with
-          if (!data.results || !data.results.length) { return; }
-
+          if (!data.results || !data.results.length) { console.log('test'); return; }
           // Get the last message
           var mostRecentMessage = data.results[data.results.length-1];
           var displayedRoom = $('.chat span').first().data('roomname');
-          // app.stopSpinner();
-          // Only bother updating the DOM if we have a new message
-          if (mostRecentMessage.objectId !== app.lastMessageId || app.roomname !== displayedRoom) {
-            // Update the UI with the fetched rooms
+          app.stopSpinner();
+          app.populateMessages(data.results, animate);
+
+          if(server){ //fetch message
             app.populateRooms(data.results);
-
-            // Update the UI with the fetched messages
-            app.populateMessages(data.results, animate);
-
-            // Store the ID of the most recent message
-            app.lastMessageId = mostRecentMessage.objectId;
           }
         },
         error: function(data) {
           console.error('chatterbox: Failed to fetch messages');
         },
-        // complete:function(){console.log('fetch complete');}
+        complete:function(){console.log('fetch complete');}
       });
     },
     clearMessages: function() {
@@ -121,7 +112,7 @@ $(function() {
       }
     },
     populateRooms: function(results) {
-      app.$roomSelect.html('<option value="__newRoom">New room...</option><option value="" selected>Lobby</option></select>');
+      app.$roomSelect.html('<option value="__newRoom">New room...</option></select>');
 
       if (results) {
         var rooms = {};
@@ -130,13 +121,11 @@ $(function() {
           if (roomname && !rooms[roomname]) {
             // Add the room to the select menu
             app.addRoom(roomname);
-
             // Store that we've added this room already
             rooms[roomname] = true;
           }
         });
       }
-
       // Select the menu option
       app.$roomSelect.val(app.roomname);
     },
@@ -146,6 +135,7 @@ $(function() {
 
       // Add to select
       app.$roomSelect.append($option);
+      console.log('new room added');
     },
     addMessage: function(data) {
       if (!data.roomname)
@@ -197,6 +187,10 @@ $(function() {
           // Set as the current room
           app.roomname = roomname;
 
+          // Save room to db
+          app.send({roomname:roomname},
+                   'http://127.0.0.1:3000/classes/rooms');
+
           // Add the room to the menu
           app.addRoom(roomname);
 
@@ -204,16 +198,16 @@ $(function() {
           app.$roomSelect.val(roomname);
 
           // Fetch messages again
-          app.fetch();
+         // app.fetch(true, 'http://127.0.0.1:3000/classes/rooms');
         }
       }
       else {
         app.startSpinner();
         // Store as undefined for empty names
         app.roomname = app.$roomSelect.val();
-
+        console.log(app.roomname);
         // Fetch messages again
-        app.fetch();
+        app.fetch(true);
       }
     },
     handleSubmit: function(evt) {
@@ -229,8 +223,8 @@ $(function() {
       evt.preventDefault();
     },
     startSpinner: function(){
-      // $('.spinner img').show();
-      // $('form input[type=submit]').attr('disabled', "true");
+      $('.spinner img').show();
+      $('form input[type=submit]').attr('disabled', "true");
     },
 
     stopSpinner: function(){
